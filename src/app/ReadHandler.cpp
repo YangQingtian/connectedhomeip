@@ -95,7 +95,6 @@ ReadHandler::~ReadHandler()
     {
         InteractionModelEngine::GetInstance()->GetReportingEngine().OnReportConfirm();
     }
-
     InteractionModelEngine::GetInstance()->ReleaseClusterInfoList(mpAttributeClusterInfoList);
     InteractionModelEngine::GetInstance()->ReleaseClusterInfoList(mpEventClusterInfoList);
     InteractionModelEngine::GetInstance()->ReleaseClusterInfoList(mpDataVersionFilterList);
@@ -150,7 +149,6 @@ CHIP_ERROR ReadHandler::OnStatusResponse(Messaging::ExchangeContext * apExchange
     case HandlerState::AwaitingReportResponse:
         if (IsChunkedReport())
         {
-            InteractionModelEngine::GetInstance()->GetReportingEngine().OnReportConfirm();
             MoveToState(HandlerState::GeneratingReports);
             if (mpExchangeCtx)
             {
@@ -161,7 +159,6 @@ CHIP_ERROR ReadHandler::OnStatusResponse(Messaging::ExchangeContext * apExchange
         }
         else if (IsType(InteractionType::Subscribe))
         {
-            InteractionModelEngine::GetInstance()->GetReportingEngine().OnReportConfirm();
             if (IsPriming())
             {
                 err           = SendSubscribeResponse();
@@ -223,6 +220,7 @@ CHIP_ERROR ReadHandler::SendReportData(System::PacketBufferHandle && aPayload, b
     if (IsPriming() || IsChunkedReport())
     {
         mSessionHandle.Grab(mpExchangeCtx->GetSessionHandle());
+        mpExchangeCtx->SetResponseTimeout(kImMessageTimeout);
     }
     else
     {
@@ -579,6 +577,11 @@ const char * ReadHandler::GetStateStr() const
 
 void ReadHandler::MoveToState(const HandlerState aTargetState)
 {
+    if (IsAwaitingReportResponse())
+    {
+        InteractionModelEngine::GetInstance()->GetReportingEngine().OnReportConfirm();
+    }
+
     mState = aTargetState;
     ChipLogDetail(DataManagement, "IM RH moving to [%s]", GetStateStr());
 }
