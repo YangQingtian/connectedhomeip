@@ -720,7 +720,7 @@ void TestReadInteraction::TestReadFabricScopedWithFabricFilter(nlTestSuite * apS
     NL_TEST_ASSERT(apSuite, ctx.GetExchangeManager().GetNumActiveExchanges() == 0);
 }
 
-//Drop report during subscription priming stage, expect OnResponseTimeout is called
+// Drop report during subscription priming stage, expect OnResponseTimeout is called
 void TestReadInteraction::TestReadHandler_SubscriptionDropReport(nlTestSuite * apSuite, void * apContext)
 {
     TestContext & ctx                        = *static_cast<TestContext *>(apContext);
@@ -752,22 +752,21 @@ void TestReadInteraction::TestReadHandler_SubscriptionDropReport(nlTestSuite * a
                        &ctx.GetExchangeManager(), sessionHandle, kTestEndpointId, onSuccessCb, onFailureCb, 0, 10,
                        onSubscriptionEstablishedCb, false, true) == CHIP_NO_ERROR);
 
-// Now send a message from the other side, but drop it.
+    // Now send a message from the other side, but drop it.
     sLoopback.mNumMessagesToDrop = 1;
     ctx.DrainAndServiceIO();
     app::InteractionModelEngine::GetInstance()->GetReportingEngine().Run();
     ctx.DrainAndServiceIO();
-
 
     NL_TEST_ASSERT(apSuite, numSuccessCalls == 0);
     NL_TEST_ASSERT(apSuite, numSubscriptionEstablishedCalls == 0);
 
     app::InteractionModelEngine::GetInstance()->ShutdownActiveReads();
     NL_TEST_ASSERT(apSuite, app::InteractionModelEngine::GetInstance()->GetReportingEngine().GetNumReportsInFlight() == 0);
-    //NL_TEST_ASSERT(apSuite, ctx.GetExchangeManager().GetNumActiveExchanges() == 0);
+    // NL_TEST_ASSERT(apSuite, ctx.GetExchangeManager().GetNumActiveExchanges() == 0);
 }
 
-//send report with error during subscription priming stage, expect read handler is shutdown
+// send report with error during subscription priming stage, expect read handler is shutdown
 void TestReadInteraction::TestReadHandler_SubscriptionSendReportFail(nlTestSuite * apSuite, void * apContext)
 {
     TestContext & ctx                        = *static_cast<TestContext *>(apContext);
@@ -809,7 +808,7 @@ void TestReadInteraction::TestReadHandler_SubscriptionSendReportFail(nlTestSuite
     NL_TEST_ASSERT(apSuite, numSubscriptionEstablishedCalls == 0);
     NL_TEST_ASSERT(apSuite, app::InteractionModelEngine::GetInstance()->GetReportingEngine().GetNumReportsInFlight() == 0);
     app::InteractionModelEngine::GetInstance()->ShutdownActiveReads();
-   // NL_TEST_ASSERT(apSuite, ctx.GetExchangeManager().GetNumActiveExchanges() == 0);
+    // NL_TEST_ASSERT(apSuite, ctx.GetExchangeManager().GetNumActiveExchanges() == 0);
 }
 
 // clang-format off
