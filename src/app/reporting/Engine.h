@@ -101,6 +101,8 @@ public:
      */
     void ResetReadHandlerTracker() { mCurReadHandlerIdx = 0; }
 
+    uint32_t GetNumReportsInFlight() { return mNumReportsInFlight; }
+
 private:
     friend class TestReportingEngine;
     /**
